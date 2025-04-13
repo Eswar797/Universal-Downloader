@@ -1,39 +1,1075 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Media Downloader</title>
-    <meta http-equiv="refresh" content="0;url=functional-downloader.html">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            color: white;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .redirect-message {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 80%;
-        }
-        a {
-            color: white;
-            text-decoration: underline;
-        }
-    </style>
+  <title>Intuitive Media Downloader</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --secondary: #ec4899;
+      --secondary-hover: #db2777;
+      --gradient-start: #8b5cf6;
+      --gradient-end: #ec4899;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-rgb: 30, 41, 59;
+      --border: #e2e8f0;
+      --success: #8b5cf6;
+      --success-hover: #7c3aed;
+      --error: #ef4444;
+      --tooltip-bg: rgba(15, 23, 42, 0.9);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1021;
+        --card-bg: #1e1b4b;
+        --text: #f1f5f9;
+        --text-rgb: 241, 245, 249;
+        --border: #4f46e5;
+        --tooltip-bg: rgba(30, 27, 75, 0.9);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #network-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 2rem 0;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.025em;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.25);
+    }
+
+    .input-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper::before {
+      content: "🔗";
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.25rem;
+      opacity: 0.7;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    input {
+      width: 100%;
+      padding: 1rem 1.5rem 1rem 3rem;
+      border: 2px solid var(--border);
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      background-color: var(--card-bg);
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+    }
+
+    input:focus + .input-placeholder {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .input-placeholder {
+      position: absolute;
+      left: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(var(--text-rgb), 0.6);
+      font-size: 0.95rem;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .input-placeholder .platform-icons {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: 0.5rem;
+    }
+
+    .input-placeholder .platform-icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.8;
+    }
+
+    .button {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .button::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+
+    .button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4);
+    }
+
+    .button:hover {
+      background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
+      transform: translateY(-2px);
+    }
+
+    .button:active::after {
+      animation: ripple 0.6s ease-out;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
+      }
+    }
+
+    .button.success {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .button.success:hover {
+      background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
+    }
+
+    .button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+      padding: 1rem 1rem 1rem 3rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+      display: none;
+      border-left: 4px solid var(--error);
+      position: relative;
+    }
+
+    .error::before {
+      content: "⚠️";
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 3rem;
+      height: 3rem;
+      border: 3px solid rgba(139, 92, 246, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 1rem;
+    }
+
+    .result {
+      display: none;
+    }
+
+    .video-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .video-info {
+        flex-direction: row;
+      }
+    }
+
+    .thumbnail {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: auto;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2), 0 2px 4px rgba(139, 92, 246, 0.1);
+      transition: transform 0.3s ease;
+      border: 2px solid rgba(139, 92, 246, 0.1);
+    }
+
+    .thumbnail img:hover {
+      transform: scale(1.05);
+    }
+
+    .details {
+      flex: 1;
+    }
+
+    .details h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .details p {
+      color: rgba(var(--text-rgb), 0.8);
+      margin-bottom: 0.5rem;
+    }
+
+    .platform-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .youtube {
+      background-color: rgba(236, 72, 153, 0.1);
+      color: #ec4899;
+    }
+
+    .instagram {
+      background-color: rgba(139, 92, 246, 0.1);
+      color: #8b5cf6;
+    }
+
+    .twitter {
+      background-color: rgba(129, 140, 248, 0.1);
+      color: #818cf8;
+    }
+
+    .tiktok {
+      background-color: rgba(236, 72, 153, 0.1);
+      color: #ec4899;
+    }
+
+    .format-options {
+      margin-top: 1.5rem;
+    }
+
+    .format-option {
+      background-color: rgba(var(--bg-rgb), 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .format-option::before {
+      content: "📥";
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .format-option:hover {
+      border-color: var(--primary);
+      transform: translateX(5px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    }
+
+    .format-option:hover::before {
+      opacity: 1;
+      left: -8px;
+    }
+
+    .format-option a {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      color: white;
+      text-decoration: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-top: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .format-option a:hover {
+      background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
+      transform: scale(1.05);
+    }
+
+    .format-option p {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    .format-option h3 {
+      color: var(--primary);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .animate-delay-1 {
+      animation-delay: 0.1s;
+    }
+
+    .animate-delay-2 {
+      animation-delay: 0.2s;
+    }
+
+    .animate-delay-3 {
+      animation-delay: 0.3s;
+    }
+
+    /* Tooltip styles */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltip-text {
+      visibility: hidden;
+      width: 200px;
+      background-color: var(--tooltip-bg);
+      color: white;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+    }
+
+    .tooltip .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Platform selection */
+    .platform-selector {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .platform-button {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .platform-button:hover {
+      background-color: rgba(139, 92, 246, 0.1);
+      border-color: var(--primary);
+    }
+
+    .platform-button.active {
+      background-color: rgba(139, 92, 246, 0.2);
+      border-color: var(--primary);
+    }
+
+    .platform-button img {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* URL validation indicator */
+    .url-indicator {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .url-indicator.valid {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      opacity: 1;
+    }
+
+    .url-indicator.invalid {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: var(--error);
+      opacity: 1;
+    }
+
+    /* Hidden field for URL type */
+    #url-type {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="redirect-message">
-        <h1>Universal Media Downloader</h1>
-        <p>If you are not redirected automatically, <a href="functional-downloader.html">click here</a>.</p>
+  <canvas id="network-bg"></canvas>
+  <div class="container">
+    <h1 class="animate-fade-in">Universal Media Downloader</h1>
+    
+    <div class="card input-form animate-fade-in animate-delay-1">
+      <div class="input-wrapper">
+        <input type="text" id="url-input" placeholder=" " autofocus>
+        <div class="input-placeholder">
+          Paste URL from
+          <div class="platform-icons">
+            <img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=32" alt="YouTube" class="platform-icon">
+            <img src="https://www.google.com/s2/favicons?domain=instagram.com&sz=32" alt="Instagram" class="platform-icon">
+            <img src="https://www.google.com/s2/favicons?domain=tiktok.com&sz=32" alt="TikTok" class="platform-icon">
+            <img src="https://www.google.com/s2/favicons?domain=twitter.com&sz=32" alt="Twitter" class="platform-icon">
+          </div>
+        </div>
+        <div class="url-indicator" id="url-indicator"></div>
+        <input type="hidden" id="url-type" value="">
+      </div>
+      
+      <div class="platform-selector">
+        <button class="platform-button tooltip" data-platform="youtube">
+          <img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=32" alt="YouTube">
+          <span class="tooltip-text">YouTube videos and playlists</span>
+        </button>
+        <button class="platform-button tooltip" data-platform="instagram">
+          <img src="https://www.google.com/s2/favicons?domain=instagram.com&sz=32" alt="Instagram">
+          <span class="tooltip-text">Instagram posts, reels and stories</span>
+        </button>
+        <button class="platform-button tooltip" data-platform="tiktok">
+          <img src="https://www.google.com/s2/favicons?domain=tiktok.com&sz=32" alt="TikTok">
+          <span class="tooltip-text">TikTok videos</span>
+        </button>
+        <button class="platform-button tooltip" data-platform="twitter">
+          <img src="https://www.google.com/s2/favicons?domain=twitter.com&sz=32" alt="Twitter">
+          <span class="tooltip-text">Twitter/X videos and images</span>
+        </button>
+      </div>
+      
+      <button id="process-btn" class="button tooltip" onclick="processUrl()">
+        Get Download Options
+        <span class="tooltip-text">Process URL to see available formats</span>
+      </button>
+      
+      <div class="error" id="error-message">
+        Please enter a valid URL
+      </div>
     </div>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Analyzing your link...</p>
+    </div>
+    
+    <div class="result card animate-fade-in animate-delay-2" id="result-box">
+      <div class="video-info">
+        <div class="thumbnail">
+          <img id="thumbnail-img" src="" alt="Thumbnail">
+        </div>
+        <div class="details">
+          <div id="platform-badge" class="platform-badge youtube">YouTube</div>
+          <h2 id="video-title">Title</h2>
+          <p id="video-platform">Platform: YouTube</p>
+          <p id="video-duration">Duration: 00:00</p>
+        </div>
+      </div>
+      
+      <div class="format-options" id="format-options">
+        <!-- Format options will be added here dynamically -->
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Network background animation with violet and pink theme
+    (function() {
+      const canvas = document.getElementById('network-bg');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      
+      // Animation settings
+      const nodes = [];
+      const nodeCount = 80;
+      const connectionDistance = 180;
+      
+      // Color palette (violet to pink gradient)
+      const colors = [
+        '#8b5cf6', // Violet
+        '#a78bfa',
+        '#c4b5fd',
+        '#f0abfc',
+        '#e879f9',
+        '#ec4899'  // Pink
+      ];
+      
+      // Create nodes
+      for (let i = 0; i < nodeCount; i++) {
+        nodes.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 2 + 1.5
+        });
+      }
+      
+      // Draw function
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Update node positions
+        for (let i = 0; i < nodes.length; i++) {
+          const node = nodes[i];
+          
+          // Move node
+          node.x += node.vx;
+          node.y += node.vy;
+          
+          // Bounce off edges
+          if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+          if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+          
+          // Draw node
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+          ctx.fillStyle = node.color;
+          ctx.fill();
+          
+          // Connect to nearby nodes
+          for (let j = i + 1; j < nodes.length; j++) {
+            const otherNode = nodes[j];
+            const dx = otherNode.x - node.x;
+            const dy = otherNode.y - node.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < connectionDistance) {
+              // Calculate opacity based on distance
+              const opacity = 1 - (distance / connectionDistance);
+              
+              // Create gradient for connection
+              const gradient = ctx.createLinearGradient(
+                node.x, node.y, otherNode.x, otherNode.y
+              );
+              gradient.addColorStop(0, node.color + Math.floor(opacity * 70 + 10).toString(16).padStart(2, '0'));
+              gradient.addColorStop(1, otherNode.color + Math.floor(opacity * 70 + 10).toString(16).padStart(2, '0'));
+              
+              // Draw connection
+              ctx.beginPath();
+              ctx.moveTo(node.x, node.y);
+              ctx.lineTo(otherNode.x, otherNode.y);
+              ctx.strokeStyle = gradient;
+              ctx.lineWidth = opacity * 1.2;
+              ctx.stroke();
+            }
+          }
+        }
+        
+        requestAnimationFrame(draw);
+      }
+      
+      // Start animation
+      draw();
+    })();
+    
+    // URL validation functions
+    function validateUrl(url) {
+      if (!url) return { valid: false };
+      
+      if (isYouTubeUrl(url)) {
+        return { valid: true, platform: 'youtube' };
+      } else if (isInstagramUrl(url)) {
+        return { valid: true, platform: 'instagram' };
+      } else if (isTikTokUrl(url)) {
+        return { valid: true, platform: 'tiktok' };
+      } else if (isTwitterUrl(url)) {
+        return { valid: true, platform: 'twitter' };
+      }
+      
+      return { valid: false };
+    }
+    
+    // Setup URL input validation with visual feedback
+    const urlInput = document.getElementById('url-input');
+    const urlIndicator = document.getElementById('url-indicator');
+    const urlType = document.getElementById('url-type');
+    const platformButtons = document.querySelectorAll('.platform-button');
+    
+    urlInput.addEventListener('input', function() {
+      const url = this.value.trim();
+      const validation = validateUrl(url);
+      
+      if (validation.valid) {
+        urlIndicator.innerHTML = '✓';
+        urlIndicator.className = 'url-indicator valid';
+        urlType.value = validation.platform;
+        
+        // Set the active platform button
+        platformButtons.forEach(btn => {
+          if (btn.dataset.platform === validation.platform) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      } else if (url) {
+        urlIndicator.innerHTML = '✗';
+        urlIndicator.className = 'url-indicator invalid';
+        urlType.value = '';
+        
+        // Clear active platform buttons
+        platformButtons.forEach(btn => btn.classList.remove('active'));
+      } else {
+        urlIndicator.className = 'url-indicator';
+        urlType.value = '';
+        
+        // Clear active platform buttons
+        platformButtons.forEach(btn => btn.classList.remove('active'));
+      }
+    });
+    
+    // Platform button functionality
+    platformButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const platform = this.dataset.platform;
+        
+        // Set URL input placeholder based on platform
+        let placeholder = '';
+        switch(platform) {
+          case 'youtube':
+            placeholder = 'https://www.youtube.com/watch?v=...';
+            break;
+          case 'instagram':
+            placeholder = 'https://www.instagram.com/p/...';
+            break;
+          case 'tiktok':
+            placeholder = 'https://www.tiktok.com/@user/video/...';
+            break;
+          case 'twitter':
+            placeholder = 'https://twitter.com/user/status/...';
+            break;
+        }
+        
+        urlInput.setAttribute('placeholder', placeholder);
+        urlInput.focus();
+        
+        // Set active state
+        platformButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // Main function to process URL
+    async function processUrl() {
+      const url = urlInput.value.trim();
+      const errorMessage = document.getElementById('error-message');
+      const resultBox = document.getElementById('result-box');
+      const loadingBox = document.getElementById('loading');
+      const processBtn = document.getElementById('process-btn');
+      
+      // Reset display
+      errorMessage.style.display = 'none';
+      resultBox.style.display = 'none';
+      loadingBox.style.display = 'none';
+      
+      // Validate URL first
+      const validation = validateUrl(url);
+      if (!url) {
+        errorMessage.textContent = 'Please enter a URL';
+        errorMessage.style.display = 'block';
+        urlInput.focus();
+        return;
+      } else if (!validation.valid) {
+        errorMessage.textContent = 'Unsupported URL. Please use YouTube, Instagram, TikTok, or Twitter URLs.';
+        errorMessage.style.display = 'block';
+        return;
+      }
+      
+      // Show loading state with platform-specific message
+      loadingBox.style.display = 'block';
+      processBtn.innerHTML = `<span>Processing...</span>`;
+      processBtn.disabled = true;
+      
+      try {
+        // Detect platform
+        if (isYouTubeUrl(url)) {
+          await handleYouTube(url);
+        } else if (isInstagramUrl(url)) {
+          await handleInstagram(url);
+        } else if (isTikTokUrl(url)) {
+          await handleTikTok(url);
+        } else if (isTwitterUrl(url)) {
+          await handleTwitter(url);
+        } else {
+          throw new Error('Unsupported platform. Please use YouTube, Instagram, TikTok, or Twitter URLs.');
+        }
+        
+        resultBox.style.display = 'block';
+        // Scroll to result with highlight animation
+        resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        resultBox.classList.add('highlight');
+        setTimeout(() => resultBox.classList.remove('highlight'), 1000);
+      } catch (err) {
+        errorMessage.textContent = err.message || 'Failed to process URL. Please try again.';
+        errorMessage.style.display = 'block';
+        console.error(err);
+      } finally {
+        loadingBox.style.display = 'none';
+        processBtn.innerHTML = `Get Download Options`;
+        processBtn.disabled = false;
+      }
+    }
+
+    // YouTube Handler
+    async function handleYouTube(url) {
+      try {
+        // Extract video ID
+        const videoId = extractYoutubeId(url);
+        if (!videoId) throw new Error('Invalid YouTube URL');
+        
+        // Fetch video info from YouTube oEmbed API
+        const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+        const oembedResponse = await fetch(oembedUrl);
+        const oembedData = await oembedResponse.json();
+        
+        // Update UI with basic info
+        document.getElementById('video-title').textContent = oembedData.title;
+        document.getElementById('video-platform').textContent = 'Platform: YouTube';
+        document.getElementById('thumbnail-img').src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+        document.getElementById('platform-badge').textContent = 'YouTube';
+        document.getElementById('platform-badge').className = 'platform-badge youtube';
+        
+        // For demonstration, provide direct links to Y2mate website
+        const formatOptions = document.getElementById('format-options');
+        formatOptions.innerHTML = `
+          <div class="format-option animate-fade-in animate-delay-2">
+            <h3>HD Quality (MP4)</h3>
+            <p>Best quality video with audio</p>
+            <a href="https://www.y2mate.com/youtube/${videoId}" target="_blank">
+              Download with Y2mate
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Multiple Quality Options</h3>
+            <p>Choose from various quality settings</p>
+            <a href="https://www.ssyoutube.com/watch?v=${videoId}" target="_blank">
+              Download with SaveFrom
+            </a>
+          </div>
+        `;
+      } catch (error) {
+        throw new Error('Failed to process YouTube video: ' + error.message);
+      }
+    }
+    
+    // Instagram Handler
+    async function handleInstagram(url) {
+      try {
+        document.getElementById('video-title').textContent = 'Instagram Content';
+        document.getElementById('video-platform').textContent = 'Platform: Instagram';
+        document.getElementById('thumbnail-img').src = 'https://via.placeholder.com/480x270.png?text=Instagram+Preview';
+        document.getElementById('platform-badge').textContent = 'Instagram';
+        document.getElementById('platform-badge').className = 'platform-badge instagram';
+        
+        // For demonstration, provide direct links to Rapidsave
+        const formatOptions = document.getElementById('format-options');
+        formatOptions.innerHTML = `
+          <div class="format-option animate-fade-in animate-delay-2">
+            <h3>Instagram Downloader</h3>
+            <p>Download posts, reels, stories and IGTV</p>
+            <a href="https://rapidsave.com/instagram?url=${encodeURIComponent(url)}" target="_blank">
+              Download with RapidSave
+            </a>
+          </div>
+        `;
+      } catch (error) {
+        throw new Error('Failed to process Instagram content: ' + error.message);
+      }
+    }
+    
+    // TikTok Handler
+    async function handleTikTok(url) {
+      try {
+        document.getElementById('video-title').textContent = 'TikTok Video';
+        document.getElementById('video-platform').textContent = 'Platform: TikTok';
+        document.getElementById('thumbnail-img').src = 'https://via.placeholder.com/480x270.png?text=TikTok+Preview';
+        document.getElementById('platform-badge').textContent = 'TikTok';
+        document.getElementById('platform-badge').className = 'platform-badge tiktok';
+        
+        // For demonstration, provide direct links to external services
+        const formatOptions = document.getElementById('format-options');
+        formatOptions.innerHTML = `
+          <div class="format-option animate-fade-in animate-delay-2">
+            <h3>HD Quality (No Watermark)</h3>
+            <p>High quality video without TikTok watermark</p>
+            <a href="https://ssstik.io/en?url=${encodeURIComponent(url)}" target="_blank">
+              Download with SSSTIK
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Original Quality</h3>
+            <p>Original video quality with options</p>
+            <a href="https://snaptik.app/en?url=${encodeURIComponent(url)}" target="_blank">
+              Download with SnapTik
+            </a>
+          </div>
+        `;
+      } catch (error) {
+        throw new Error('Failed to process TikTok video: ' + error.message);
+      }
+    }
+    
+    // Twitter Handler
+    async function handleTwitter(url) {
+      try {
+        document.getElementById('video-title').textContent = 'Twitter/X Content';
+        document.getElementById('video-platform').textContent = 'Platform: Twitter/X';
+        document.getElementById('thumbnail-img').src = 'https://via.placeholder.com/480x270.png?text=Twitter+Preview';
+        document.getElementById('platform-badge').textContent = 'Twitter/X';
+        document.getElementById('platform-badge').className = 'platform-badge twitter';
+        
+        // For demonstration, provide direct links to external services
+        const formatOptions = document.getElementById('format-options');
+        formatOptions.innerHTML = `
+          <div class="format-option animate-fade-in animate-delay-2">
+            <h3>Twitter Video Downloader</h3>
+            <p>Download videos from Twitter/X posts</p>
+            <a href="https://twdown.net/?url=${encodeURIComponent(url)}" target="_blank">
+              Download with TwitterDownloader
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>High Quality Options</h3>
+            <p>Access multiple quality versions</p>
+            <a href="https://twsaver.com/?url=${encodeURIComponent(url)}" target="_blank">
+              Download with TWSaver
+            </a>
+          </div>
+        `;
+      } catch (error) {
+        throw new Error('Failed to process Twitter content: ' + error.message);
+      }
+    }
+    
+    // Helper Functions
+    function isYouTubeUrl(url) {
+      return url.includes('youtube.com/') || url.includes('youtu.be/');
+    }
+    
+    function isInstagramUrl(url) {
+      return url.includes('instagram.com/');
+    }
+    
+    function isTikTokUrl(url) {
+      return url.includes('tiktok.com/');
+    }
+    
+    function isTwitterUrl(url) {
+      return url.includes('twitter.com/') || url.includes('x.com/');
+    }
+    
+    function extractYoutubeId(url) {
+      let videoId = '';
+      
+      if (url.includes('youtube.com/watch')) {
+        const urlObj = new URL(url);
+        videoId = urlObj.searchParams.get('v') || '';
+      } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1];
+        if (videoId.includes('?')) {
+          videoId = videoId.split('?')[0];
+        }
+      }
+      
+      return videoId;
+    }
+    
+    // Add URL input event listeners for better UX
+    urlInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        processUrl();
+      }
+    });
+    
+    urlInput.addEventListener('paste', function() {
+      // Short timeout to allow paste to complete
+      setTimeout(() => {
+        const validation = validateUrl(this.value.trim());
+        if (validation.valid) {
+          processUrl();
+        }
+      }, 100);
+    });
+    
+    // Auto-focus the input on page load
+    window.addEventListener('load', function() {
+      urlInput.focus();
+    });
+  </script>
 </body>
 </html> 
