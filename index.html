@@ -927,28 +927,28 @@
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>HD Quality (MP4)</h3>
             <p>Best quality video with audio</p>
-            <a href="https://www.y2mate.com/youtube/${videoId}" target="_blank" onclick="openDownloader(event, 'https://www.y2mate.com/youtube/${videoId}')">
+            <a href="https://www.y2mate.com/youtube/${videoId}" target="_blank" onclick="return openDownloader(event, 'https://www.y2mate.com/youtube/${videoId}')">
               Download with Y2mate
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Multiple Quality Options</h3>
             <p>Choose from various quality settings</p>
-            <a href="https://www.ssyoutube.com/watch?v=${videoId}" target="_blank" onclick="openDownloader(event, 'https://www.ssyoutube.com/watch?v=${videoId}')">
+            <a href="https://www.ssyoutube.com/watch?v=${videoId}" target="_blank" onclick="return openDownloader(event, 'https://www.ssyoutube.com/watch?v=${videoId}')">
               Download with SaveFrom
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Alternative Download Option</h3>
             <p>If other options aren't working</p>
-            <a href="https://en.savefrom.net/1-youtube-video-downloader-387/?url=https://youtube.com/watch?v=${videoId}" target="_blank" onclick="openDownloader(event, 'https://en.savefrom.net/1-youtube-video-downloader-387/?url=https://youtube.com/watch?v=${videoId}')">
+            <a href="https://en.savefrom.net/1-youtube-video-downloader-387/?url=https://youtube.com/watch?v=${videoId}" target="_blank" onclick="return openDownloader(event, 'https://en.savefrom.net/1-youtube-video-downloader-387/?url=https://youtube.com/watch?v=${videoId}')">
               Download with SaveFrom.net
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Download with 4K Video Downloader</h3>
             <p>Another reliable option for downloading</p>
-            <a href="https://www.4kdownload.com/youtube?url=https://www.youtube.com/watch?v=${videoId}" target="_blank" onclick="openDownloader(event, 'https://www.4kdownload.com/youtube?url=https://www.youtube.com/watch?v=${videoId}')">
+            <a href="https://www.4kdownload.com/youtube?url=https://www.youtube.com/watch?v=${videoId}" target="_blank" onclick="return openDownloader(event, 'https://www.4kdownload.com/youtube?url=https://www.youtube.com/watch?v=${videoId}')">
               Open 4K Downloader
             </a>
           </div>
@@ -960,16 +960,23 @@
     
     // Helper function to safely open download links
     function openDownloader(event, url) {
-      // Prevent default action
-      // event.preventDefault();
+      // Prevent default action to ensure our handling works
+      event.preventDefault();
       
-      // Open in new tab
-      window.open(url, '_blank');
-      
-      // Fallback if window.open is blocked
-      setTimeout(() => {
+      // On mobile browsers, it's better to use direct location change 
+      // rather than window.open which may be blocked
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        // Direct navigation works better on mobile
         window.location.href = url;
-      }, 500);
+      } else {
+        // For desktop, opening in new tab is preferred
+        const newWindow = window.open(url, '_blank');
+        
+        // If window.open was blocked, fallback to direct navigation
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          window.location.href = url;
+        }
+      }
       
       return false;
     }
@@ -990,21 +997,21 @@
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>Instagram Downloader</h3>
             <p>Download posts, reels, stories and IGTV</p>
-            <a href="https://rapidsave.com/instagram?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://rapidsave.com/instagram?url=${encodeURIComponent(url)}')">
+            <a href="https://rapidsave.com/instagram?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://rapidsave.com/instagram?url=${encodeURIComponent(url)}')">
               Download with RapidSave
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Alternative Downloader</h3>
             <p>Download Instagram media with different options</p>
-            <a href="https://instafinsta.com/instagram-downloader?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://instafinsta.com/instagram-downloader?url=${encodeURIComponent(url)}')">
+            <a href="https://instafinsta.com/instagram-downloader?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://instafinsta.com/instagram-downloader?url=${encodeURIComponent(url)}')">
               Download with InstaFinsta
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Multi-format Downloader</h3>
             <p>Download in various formats</p>
-            <a href="https://saveinsta.app/en?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://saveinsta.app/en?url=${encodeURIComponent(url)}')">
+            <a href="https://saveinsta.app/en?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://saveinsta.app/en?url=${encodeURIComponent(url)}')">
               Download with SaveInsta
             </a>
           </div>
@@ -1030,21 +1037,21 @@
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>HD Quality (No Watermark)</h3>
             <p>High quality video without TikTok watermark</p>
-            <a href="https://ssstik.io/en?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://ssstik.io/en?url=${encodeURIComponent(url)}')">
+            <a href="https://ssstik.io/en?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://ssstik.io/en?url=${encodeURIComponent(url)}')">
               Download with SSSTIK
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Original Quality</h3>
             <p>Original video quality with options</p>
-            <a href="https://snaptik.app/en?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://snaptik.app/en?url=${encodeURIComponent(url)}')">
+            <a href="https://snaptik.app/en?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://snaptik.app/en?url=${encodeURIComponent(url)}')">
               Download with SnapTik
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Alternative Option</h3>
             <p>Another reliable TikTok downloader</p>
-            <a href="https://tikmate.online/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://tikmate.online/?url=${encodeURIComponent(url)}')">
+            <a href="https://tikmate.online/?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://tikmate.online/?url=${encodeURIComponent(url)}')">
               Download with TikMate
             </a>
           </div>
@@ -1070,21 +1077,21 @@
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>Twitter Video Downloader</h3>
             <p>Download videos from Twitter/X posts</p>
-            <a href="https://twdown.net/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://twdown.net/?url=${encodeURIComponent(url)}')">
+            <a href="https://twdown.net/?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://twdown.net/?url=${encodeURIComponent(url)}')">
               Download with TwitterDownloader
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>High Quality Options</h3>
             <p>Access multiple quality versions</p>
-            <a href="https://twsaver.com/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://twsaver.com/?url=${encodeURIComponent(url)}')">
+            <a href="https://twsaver.com/?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://twsaver.com/?url=${encodeURIComponent(url)}')">
               Download with TWSaver
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Alternative Downloader</h3>
             <p>Download Twitter/X videos and images</p>
-            <a href="https://twittervideodownloader.com/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://twittervideodownloader.com/?url=${encodeURIComponent(url)}')">
+            <a href="https://twittervideodownloader.com/?url=${encodeURIComponent(url)}" target="_blank" onclick="return openDownloader(event, 'https://twittervideodownloader.com/?url=${encodeURIComponent(url)}')">
               Download with TwitterVideoDownloader
             </a>
           </div>
