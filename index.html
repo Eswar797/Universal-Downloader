@@ -982,6 +982,7 @@
         document.getElementById('thumbnail-img').src = 'https://via.placeholder.com/480x270.png?text=Instagram+Preview';
         document.getElementById('platform-badge').textContent = 'Instagram';
         document.getElementById('platform-badge').className = 'platform-badge instagram';
+        document.getElementById('video-duration').textContent = 'Duration: N/A';
         
         // For demonstration, provide direct links to Rapidsave
         const formatOptions = document.getElementById('format-options');
@@ -989,8 +990,22 @@
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>Instagram Downloader</h3>
             <p>Download posts, reels, stories and IGTV</p>
-            <a href="https://rapidsave.com/instagram?url=${encodeURIComponent(url)}" target="_blank">
+            <a href="https://rapidsave.com/instagram?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://rapidsave.com/instagram?url=${encodeURIComponent(url)}')">
               Download with RapidSave
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Alternative Downloader</h3>
+            <p>Download Instagram media with different options</p>
+            <a href="https://instafinsta.com/instagram-downloader?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://instafinsta.com/instagram-downloader?url=${encodeURIComponent(url)}')">
+              Download with InstaFinsta
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Multi-format Downloader</h3>
+            <p>Download in various formats</p>
+            <a href="https://saveinsta.app/en?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://saveinsta.app/en?url=${encodeURIComponent(url)}')">
+              Download with SaveInsta
             </a>
           </div>
         `;
@@ -1007,6 +1022,7 @@
         document.getElementById('thumbnail-img').src = 'https://via.placeholder.com/480x270.png?text=TikTok+Preview';
         document.getElementById('platform-badge').textContent = 'TikTok';
         document.getElementById('platform-badge').className = 'platform-badge tiktok';
+        document.getElementById('video-duration').textContent = 'Duration: N/A';
         
         // For demonstration, provide direct links to external services
         const formatOptions = document.getElementById('format-options');
@@ -1014,15 +1030,22 @@
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>HD Quality (No Watermark)</h3>
             <p>High quality video without TikTok watermark</p>
-            <a href="https://ssstik.io/en?url=${encodeURIComponent(url)}" target="_blank">
+            <a href="https://ssstik.io/en?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://ssstik.io/en?url=${encodeURIComponent(url)}')">
               Download with SSSTIK
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Original Quality</h3>
             <p>Original video quality with options</p>
-            <a href="https://snaptik.app/en?url=${encodeURIComponent(url)}" target="_blank">
+            <a href="https://snaptik.app/en?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://snaptik.app/en?url=${encodeURIComponent(url)}')">
               Download with SnapTik
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Alternative Option</h3>
+            <p>Another reliable TikTok downloader</p>
+            <a href="https://tikmate.online/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://tikmate.online/?url=${encodeURIComponent(url)}')">
+              Download with TikMate
             </a>
           </div>
         `;
@@ -1039,6 +1062,7 @@
         document.getElementById('thumbnail-img').src = 'https://via.placeholder.com/480x270.png?text=Twitter+Preview';
         document.getElementById('platform-badge').textContent = 'Twitter/X';
         document.getElementById('platform-badge').className = 'platform-badge twitter';
+        document.getElementById('video-duration').textContent = 'Duration: N/A';
         
         // For demonstration, provide direct links to external services
         const formatOptions = document.getElementById('format-options');
@@ -1046,15 +1070,22 @@
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>Twitter Video Downloader</h3>
             <p>Download videos from Twitter/X posts</p>
-            <a href="https://twdown.net/?url=${encodeURIComponent(url)}" target="_blank">
+            <a href="https://twdown.net/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://twdown.net/?url=${encodeURIComponent(url)}')">
               Download with TwitterDownloader
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>High Quality Options</h3>
             <p>Access multiple quality versions</p>
-            <a href="https://twsaver.com/?url=${encodeURIComponent(url)}" target="_blank">
+            <a href="https://twsaver.com/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://twsaver.com/?url=${encodeURIComponent(url)}')">
               Download with TWSaver
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Alternative Downloader</h3>
+            <p>Download Twitter/X videos and images</p>
+            <a href="https://twittervideodownloader.com/?url=${encodeURIComponent(url)}" target="_blank" onclick="openDownloader(event, 'https://twittervideodownloader.com/?url=${encodeURIComponent(url)}')">
+              Download with TwitterVideoDownloader
             </a>
           </div>
         `;
