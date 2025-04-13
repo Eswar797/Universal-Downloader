@@ -894,37 +894,84 @@
         
         // Fetch video info from YouTube oEmbed API
         const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-        const oembedResponse = await fetch(oembedUrl);
-        const oembedData = await oembedResponse.json();
+        
+        let oembedData;
+        try {
+          const oembedResponse = await fetch(oembedUrl);
+          oembedData = await oembedResponse.json();
+        } catch (error) {
+          console.error("Error fetching from oEmbed API:", error);
+          // Fallback with basic info if API fails
+          oembedData = {
+            title: "YouTube Video: " + videoId,
+            author_name: "YouTube Creator"
+          };
+        }
+        
+        // Set placeholder duration initially
+        let duration = "Unknown";
         
         // Update UI with basic info
-        document.getElementById('video-title').textContent = oembedData.title;
+        document.getElementById('video-title').textContent = oembedData.title || "YouTube Video";
         document.getElementById('video-platform').textContent = 'Platform: YouTube';
         document.getElementById('thumbnail-img').src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
         document.getElementById('platform-badge').textContent = 'YouTube';
         document.getElementById('platform-badge').className = 'platform-badge youtube';
+        document.getElementById('video-duration').textContent = `Duration: ${duration}`;
         
-        // For demonstration, provide direct links to Y2mate website
+        // For demonstration, provide direct links to downloader websites with properly encoded URLs
         const formatOptions = document.getElementById('format-options');
+        
+        // Use a variety of download services to ensure at least one works
         formatOptions.innerHTML = `
           <div class="format-option animate-fade-in animate-delay-2">
             <h3>HD Quality (MP4)</h3>
             <p>Best quality video with audio</p>
-            <a href="https://www.y2mate.com/youtube/${videoId}" target="_blank">
+            <a href="https://www.y2mate.com/youtube/${videoId}" target="_blank" onclick="openDownloader(event, 'https://www.y2mate.com/youtube/${videoId}')">
               Download with Y2mate
             </a>
           </div>
           <div class="format-option animate-fade-in animate-delay-3">
             <h3>Multiple Quality Options</h3>
             <p>Choose from various quality settings</p>
-            <a href="https://www.ssyoutube.com/watch?v=${videoId}" target="_blank">
+            <a href="https://www.ssyoutube.com/watch?v=${videoId}" target="_blank" onclick="openDownloader(event, 'https://www.ssyoutube.com/watch?v=${videoId}')">
               Download with SaveFrom
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Alternative Download Option</h3>
+            <p>If other options aren't working</p>
+            <a href="https://en.savefrom.net/1-youtube-video-downloader-387/?url=https://youtube.com/watch?v=${videoId}" target="_blank" onclick="openDownloader(event, 'https://en.savefrom.net/1-youtube-video-downloader-387/?url=https://youtube.com/watch?v=${videoId}')">
+              Download with SaveFrom.net
+            </a>
+          </div>
+          <div class="format-option animate-fade-in animate-delay-3">
+            <h3>Download with 4K Video Downloader</h3>
+            <p>Another reliable option for downloading</p>
+            <a href="https://www.4kdownload.com/youtube?url=https://www.youtube.com/watch?v=${videoId}" target="_blank" onclick="openDownloader(event, 'https://www.4kdownload.com/youtube?url=https://www.youtube.com/watch?v=${videoId}')">
+              Open 4K Downloader
             </a>
           </div>
         `;
       } catch (error) {
         throw new Error('Failed to process YouTube video: ' + error.message);
       }
+    }
+    
+    // Helper function to safely open download links
+    function openDownloader(event, url) {
+      // Prevent default action
+      // event.preventDefault();
+      
+      // Open in new tab
+      window.open(url, '_blank');
+      
+      // Fallback if window.open is blocked
+      setTimeout(() => {
+        window.location.href = url;
+      }, 500);
+      
+      return false;
     }
     
     // Instagram Handler
